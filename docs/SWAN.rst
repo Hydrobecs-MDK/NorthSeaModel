@@ -4,7 +4,7 @@ HydroBeCS user manual and SOP for SWAN
 Introduction
 ^^^^^^^^^^^^
 
-The swan intro here
+This documentation describes the stand-alone SWAN model employed during the HydroBeCS model development. For the SWAN model deployed as part of the ROMS model, see **- INSERT LINK HERE -**
 
 Background
 ^^^^^^^^^^
