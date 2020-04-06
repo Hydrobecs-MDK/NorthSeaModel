@@ -1,0 +1,94 @@
+ $***************************** HEADING *********************************
+ $    
+ $ This simulation uses the ECMWF coarser grid with the fine gridded DOWA 
+ $ wind input.
+ $ This small grid is a rotated grid around the Belgium coast and can not
+ $ be nested two-way online in ROMS
+ $
+ $***************************** HEADING *********************************
+ $ 
+ PROJECT  'NorthSea  ROMS  '  'SWN'                                  
+     'ROMS: SWAN Harbour: OST Coastal Grid'
+     'HydroBeCS '
+     '20110101 to 20120101'
+ $                                                                    
+ $***************************** MODEL INPUT *****************************
+ $                                                                    
+ SET  DEPMIN 0.10 RHO 1025.00 INRHOG 1 NAUTICAL 
+ $                                                                    
+ MODE NONSTATIONARY TWODIMENSIONAL
+ COORD SPHE
+ $
+ CGRID CURV  156 139  EXCEPT  0.0    0.0  CIR  36  0.025  1.00 64
+ READ COOR 1. 'OST_SWAN_grid.grd' 4 0 FREE
+ $                                                                    
+ INPGRID BOTTOM CURV 0. 0.  156 139
+ READINP BOTTOM 1.0 'OST_SWAN_grid.dep' 4 0 FREE 
+ $
+ $ BOUNDARY FORCING $
+ $
+ INPGRID WIND REGULAR -15. 45. 0 120 80 0.25 0.25 EXC -999 NONSTAT 20111001.000000 1.0 HR 20120131.230000
+ READINP WIND 1.0 SERIES 'WindList.wnd' 4 0 1 0 FREE 
+ $
+ INIT
+ $================== NEST IN =============
+ $
+ BOUNDNEST1 NEST '../030BEL_COAST/GridNest_OST_HARB.bnd'
+ $
+ $=======================================
+ GEN3                                                                 
+ BREAK CON       1.00    0.78
+ FRIC JON       0.0380                                                
+ TRIAD
+ WCAP KOM 
+ QUAD
+ PROP BSBT
+ LIM  10 1                                                            
+ NUM DIR cdd=   0.50 SIGIM css=   0.50                                
+ $                                                                    
+ NUM ACCUR        0.020    0.020    0.020   98.000 NONSTAT  1  0.1
+ $                                                                    
+ $***************************** OUTPUT REQUEST **************************
+ $
+ $================== NEST OUT =============
+ $
+ POINTS 'NGR1' FILE 'LOC/SWASH_OST_BND_out.loc'
+ SPEC 'NGR1' SPEC2D  ABS 'GridNest_OST_SWASH_BND.sp2' OUTPUT 20111001.000000 1 HR
+ TABLE 'NGR1' HEAD 'Results/BND_OST_Harbour.tbl' XP YP TSEC HSIGN RTP DIR DSPR WIND VEL OUTPUT 20111001.000000 1 HR
+ $
+ $=========================================
+ $
+ $BLOCK 'COMPGRID' NOHEADER 'Results/NorthSea_hsig_sml.nc'  LAY 4 HSIGN 1.   OUTPUT 20111001.000000 1 HR
+ $BLOCK 'COMPGRID' NOHEADER 'Results/NorthSea_tsec_sml.nc'  LAY 4 RTP 1.   OUTPUT 20111001.000000 1 HR
+ $BLOCK 'COMPGRID' NOHEADER 'Results/NorthSea_dir_sml.nc'  LAY 4 DIR 1.   OUTPUT 20111001.000000 1 HR
+ $BLOCK 'COMPGRID' NOHEADER 'Results/NorthSea_disp_sml.nc'  LAY 4 DSPR 1.   OUTPUT 20111001.000000 1 HR
+ $
+ $================BEL MDK POINTS Out ==============
+ $
+ POINTS 'OH1' 2.9208333 51.2402778
+ POINTS 'OPO' 2.8630833 51.2894167
+ POINTS 'OSN' 2.8835556 51.3523889
+ POINTS 'OST' 2.9276667 51.2468333
+ $
+ $=============TABLES============================================================
+ $
+ TABLE 'OH1' HEAD 'Results/OH1_OST_Harbour.tbl' XP YP TSEC HSIGN RTP DIR DSPR WIND VEL OUTPUT 20111001.000000 1 HR
+ TABLE 'OPO' HEAD 'Results/OPO_OST_Harbour.tbl' XP YP TSEC HSIGN RTP DIR DSPR WIND VEL OUTPUT 20111001.000000 1 HR
+ TABLE 'OSN' HEAD 'Results/OSN_OST_Harbour.tbl' XP YP TSEC HSIGN RTP DIR DSPR WIND VEL OUTPUT 20111001.000000 1 HR 
+ TABLE 'OST' HEAD 'Results/OST_OST_Harbour.tbl' XP YP TSEC HSIGN RTP DIR DSPR WIND VEL OUTPUT 20111001.000000 1 HR 
+ $
+ $==== SPECTRAL===================================================================
+ $
+ $SPEC 'MDK' SPEC1D 'Results/Spec_MDK_coast.sp1' OUTPUT 20111001.000000 1 HR
+ $
+ $================================================================================
+ $
+ $TEST  ITEST=   0  ITRACE=   0 
+ $
+ $ RESTART 'Restart/swan_NorthSea_rst_lrg.dat' FREE 24 HR
+ $
+ COMPUTE NONSTAT 20111001.000000 600 SEC 20120201.000000
+ $
+ HOTFILE 'Restart/swan_Harbour_OST.dat'
+ $
+ STOP

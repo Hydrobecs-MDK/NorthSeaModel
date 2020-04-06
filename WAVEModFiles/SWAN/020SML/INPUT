@@ -1,0 +1,83 @@
+ $***************************** HEADING *********************************
+ $                                                                    
+ PROJECT  'NorthSea  ROMS  '  'SWN'                                  
+     'ROMS: SWAN SML North Sea Grid'
+     'HydroBeCS '
+     '20110101 to 20120101'
+ $                                                                    
+ $***************************** MODEL INPUT *****************************
+ $                                                                    
+ SET  DEPMIN 0.10 RHO 1025.00 INRHOG 1 NAUTICAL 
+ $                                                                    
+ MODE NONSTATIONARY TWODIMENSIONAL
+ COORD SPHE
+ $
+ $ NSGRIDS 2
+ $
+ CGRID CURV  126 231  EXCEPT  0.0    0.0  CIR  36  0.025  1.00 64
+ READ COOR 1. 'grid_nested_mdk_wd.grd' 4 0 FREE
+ $                                                                    
+ INPGRID BOTTOM CURV 0. 0.  126 231  
+ READINP BOTTOM 1.0 'grid_nested_mdk_wd.dep' 4 0 FREE 
+ $
+ $ BOUNDARY FORCING $
+ $
+ INPGRID WIND REGULAR -15. 45. 0 120 80 0.25 0.25 EXC -999 NONSTAT 20111001.000000 1.0 HR 20120131.230000
+ READINP WIND 1.0 SERIES 'WindList.wnd' 4 0 1 0 FREE 
+ $
+ INIT
+ BOUNDNEST1 NEST '../010LRG/GridNest_LRG_Out.bnd'
+ $
+ GEN3                                                                 
+ BREAK CON       1.00    0.78
+ FRIC JON       0.0380                                                
+ TRIAD
+ $ WCAP 
+ QUAD
+ PROP BSBT
+ LIM  10 1                                                            
+ NUM DIR cdd=   0.50 SIGIM css=   0.50                                
+ $                                                                    
+ NUM ACCUR        0.020    0.020    0.020   98.000 NONSTAT  1  0.1
+ $                                                                    
+ $***************************** OUTPUT REQUEST **************************
+ $
+ $BLOCK 'COMPGRID' NOHEADER 'Results/NorthSea_wind_sml.tbl' LAY 1 WIND  1.   OUTPUT 20111001.000000 1 HR
+ $BLOCK 'COMPGRID' NOHEADER 'Results/NorthSea_hsig_sml.nc'  LAY 4 HSIGN 1.   OUTPUT 20111001.000000 1 HR
+ $
+ $================NEST Grid =======================
+ $
+ POINTS 'NGRD2' FILE 'LOC/Sml_BEL_Coast_BND.loc'
+ SPEC 'NGRD2' SPEC2D  ABS 'GridNest_SML_Out.bnd' OUTPUT 20111001.000000 1 HR
+ $
+ $================BEL MDK POINTS Out ==============
+ $
+ POINTS 'MDK' FILE 'LOC/BEL_MKD_Pts_sml.loc' 
+ POINTS 'AKZ' 2.8186111 51.4161667
+ $
+ $=============TABLES============================================================
+ $
+ TABLE 'MDK' NOHEAD 'Results/BEL_MDK_sml.tbl' XP YP TSEC HSIGN RTP DIR DSPR OUTPUT 20111001.000000 20.0 MIN
+ TABLE 'AKZ' HEAD 'Results/SWAN_AKZ_Pt_sml.tbl' TSEC HSIGN RTP DIR DSPR WIND VEL OUTPUT 20111001.000000 20.0 MIN
+ $
+ $==== SPECTRAL===================================================================
+ $
+ SPEC 'MDK' SPEC1D 'Results/Spec_MDK_sml.sp1' OUTPUT 20111001.000000 1.0 HR
+ $
+ $================== OTHER NORTH SEA OUTPUTS =====================================
+ $
+ POINTS 'NLp' FILE 'LOC/swan_NL_BuoyInfo_sml.loc'
+ $
+ TABLE 'NLp' NOHEAD 'Results/NL_BuoyInfo_sml.tbl' XP YP TSEC HSIGN RTP DIR DSPR OUTPUT 20111001.000000 60.0 MIN
+ $
+ $================================================================================
+ $
+ $TEST  ITEST=   0  ITRACE=   0 
+ $
+ $RESTART 'Restart/swan_NorthSea_rst_sml.dat' FREE 24 HR
+ $
+ COMPUTE NONSTAT 20111001.000000 1200 SEC 20120201.000000
+ $
+ HOTFILE 'Restart/swan_Restart_SML.dat'
+ $
+ STOP
