@@ -181,4 +181,4 @@ NumRecs = int(diff.days*24 + diff.seconds/3600)
             #print('startNum = ', startNum)
         t=t+1
         startNum = startNum + 1
-    return ModelSpect, DateStr, SWANfreq
+    #return ModelSpect, DateStr, SWANfreq
